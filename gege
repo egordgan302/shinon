@@ -1,0 +1,16 @@
+word=input("Enter the word:")
+def counts_letters(word):
+    letter_counts={}
+    for i in word:
+        if i in letter_counts:
+            letter_counts[i]+=1
+        else:
+            letter_counts[i]=1
+            
+    return letter_counts
+resulrt=counts_letters(word)
+for letter, counts in resulrt.items():
+    print(letter,counts)
+total_amount=sum(resulrt.values())
+print(total_amount)
+
