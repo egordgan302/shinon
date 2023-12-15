@@ -14,3 +14,6 @@ for letter, counts in resulrt.items():
 total_amount=sum(resulrt.values())
 print(f'Сумма букв {total_amount}')
 print(f'Деллим на 2  {total_amount/2}')
+
+def shino():
+    print("shino")    
