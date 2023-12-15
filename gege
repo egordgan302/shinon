@@ -12,5 +12,5 @@ resulrt=counts_letters(word)
 for letter, counts in resulrt.items():
     print(letter,counts)
 total_amount=sum(resulrt.values())
-print(total_amount)
-
+print(f'Сумма букв {total_amount}')
+print(f'Деллим на 2  {total_amount/2}')
