@@ -1,19 +1,46 @@
-word=input("Enter the word:")
-def counts_letters(word):
-    letter_counts={}
-    for i in word:
-        if i in letter_counts:
-            letter_counts[i]+=1
+def count_freq(input_data):
+    fr = {}
+    for symbol in input_data:
+        if symbol in fr:
+            fr[symbol] += 1
         else:
-            letter_counts[i]=1
-            
-    return letter_counts
-resulrt=counts_letters(word)
-for letter, counts in resulrt.items():
-    print(letter,counts)
-total_amount=sum(resulrt.values())
-print(f'Сумма букв {total_amount}')
-print(f'Деллим на 2  {total_amount/2}')
+            fr[symbol] = 1
+    return fr
 
-def shino():
-    print("shino")    
+def shannon_fano(input_data):
+    freq = count_freq(input_data)
+    sorted_freq = sorted(freq.items(), key=lambda x: x[1], reverse=True)
+
+    def build_codebook(symbols, code='', codebook={}):
+        if len(symbols) == 1:
+            codebook[symbols[0][0]] = code
+            return
+
+        total_freq = sum([f[1] for f in symbols])
+        cumulative_freq = 0
+        midpoint = 0
+
+        for i, (symbol, frequency) in enumerate(symbols):
+            cumulative_freq += frequency
+            if cumulative_freq > total_freq / 2:
+                midpoint = i
+                break
+
+        for symbol, frequency in symbols[:midpoint + 1]:
+            codebook[symbol] = code + '0'
+        for symbol, frequency in symbols[midpoint + 1:]:
+            codebook[symbol] = code + '1'
+
+        build_codebook(symbols[:midpoint + 1], code + '0', codebook)
+        build_codebook(symbols[midpoint + 1:], code + '1', codebook)
+
+    codebook = {}
+    build_codebook(sorted_freq, code='', codebook=codebook)
+
+    encoded_data = ''.join([codebook[symbol] for symbol in input_data])
+    return encoded_data, codebook
+
+input_data =input("Enter data: ")
+encoded_data, codewords = shannon_fano(input_data)
+print("Encoded data:", encoded_data)
+print("Codewords:", codewords)
