@@ -11,36 +11,47 @@ def shannon_fano(input_data):
     freq = count_freq(input_data)
     sorted_freq = sorted(freq.items(), key=lambda x: x[1], reverse=True)
 
-    def build_codebook(symbols, code='', codebook={}):
-        if len(symbols) == 1:
-            codebook[symbols[0][0]] = code
-            return
+    def build_codebook(symbols):
+        codebook = {}
+        stack = [(symbols, '')]
 
-        total_freq = sum([f[1] for f in symbols])
-        cumulative_freq = 0
-        midpoint = 0
+        while stack:
+            symbols, code = stack.pop()
+            if len(symbols) == 1:
+                codebook[symbols[0][0]] = code
+            else:
+                total_freq = sum([f[1] for f in symbols])
+                cumulative_freq = 0
+                midpoint = 0
 
-        for i, (symbol, frequency) in enumerate(symbols):
-            cumulative_freq += frequency
-            if cumulative_freq > total_freq / 2:
-                midpoint = i
-                break
+                for i, (symbol, frequency) in enumerate(symbols):
+                    cumulative_freq += frequency
+                    if cumulative_freq > total_freq / 2:
+                        midpoint = i
+                        break
 
-        for symbol, frequency in symbols[:midpoint + 1]:
-            codebook[symbol] = code + '0'
-        for symbol, frequency in symbols[midpoint + 1:]:
-            codebook[symbol] = code + '1'
+                for symbol, frequency in symbols[:midpoint + 1]:
+                    codebook[symbol] = code + '0'
+                for symbol, frequency in symbols[midpoint + 1:]:
+                    codebook[symbol] = code + '1'
 
-        build_codebook(symbols[:midpoint + 1], code + '0', codebook)
-        build_codebook(symbols[midpoint + 1:], code + '1', codebook)
+                stack.append((symbols[:midpoint + 1], code + '0'))
+                stack.append((symbols[midpoint + 1:], code + '1'))
 
-    codebook = {}
-    build_codebook(sorted_freq, code='', codebook=codebook)
+        return codebook
 
-    encoded_data = ''.join([codebook[symbol] for symbol in input_data])
-    return encoded_data, codebook
+    codebook = build_codebook(sorted_freq)
 
-input_data =input("Enter data: ")
+    encoded_data = ""
+    codewords = ""
+    for char in input_data:
+        encoded_data += codebook[char]
+        codewords += char + ": " + codebook[char] + "\n"
+
+    return encoded_data, codewords
+
+
+input_data = input("Enter data: ")
 encoded_data, codewords = shannon_fano(input_data)
 print("Encoded data:", encoded_data)
-print("Codewords:", codewords)
+print("Codewords:\n", codewords)
